@@ -1,0 +1,26 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "sessions": {
+      "$s": {
+        ".read": true,
+        ".write": "!newData.exists()",
+        "revealed": {
+          ".write": true,
+          ".validate": "newData.isBoolean()"
+        },
+        "votes": {
+          "$id": {
+            ".write": true,
+            ".validate": "newData.hasChildren(['o','r','seat']) && newData.child('o').isString() && newData.child('o').val().length < 12 && newData.child('seat').isString() && newData.child('seat').val().length < 12",
+            "o": { ".validate": true },
+            "seat": { ".validate": true },
+            "r": { ".validate": "newData.hasChildren() && newData.numChildren() <= 3" },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    }
+  }
+}

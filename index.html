@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>假如你是理事｜央行理監事會模擬投票</title>
+<meta name="description" content="根據最新的決策參考指標，模擬央行理事投票並選擇決策理由。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap">
+<style>
+:root{
+  --bg:#FAF6F0; --surface:#FFFFFF; --sand:#EFE5D0; --line:#DDD5C6;
+  --ink:#1F2D3D; --navy:#2C3E50; --muted:#6F6759;
+  --red:#8B2635; --gold:#8A5F12; --green:#3F6B3A;
+  --hike:#8B2635; --hold:#2C3E50; --cut:#3F6B3A;
+  --hot:#8B2635; --cool:#3F6B3A; --neutral:#6F6759;
+  --focus:#B7791F;
+  --serif:"Noto Serif TC","PMingLiU","Songti TC",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#131C25; --surface:#1B2733; --sand:#243342; --line:#33465A;
+    --ink:#ECE6D8; --navy:#DCE4EC; --muted:#A3AEB8;
+    --red:#E58A94; --gold:#E3B45C; --green:#8CC388;
+    --hike:#E58A94; --hold:#9FB6CC; --cut:#8CC388;
+    --hot:#E58A94; --cool:#8CC388; --neutral:#A3AEB8; --focus:#E3B45C;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+  padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 64px}
+h1,h2,h3{margin:0;font-family:var(--serif);color:var(--navy);text-wrap:balance}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--gold)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+
+/* header */
+.top{padding:28px 0 10px}
+.eyebrow{font-size:13px;letter-spacing:.14em;color:var(--gold);font-weight:700}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.2;margin:6px 0 8px;font-weight:900}
+.lede{color:var(--muted);margin:0;max-width:60ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);
+  border-radius:999px;padding:3px 12px;font-size:13px;color:var(--muted)}
+.tag b{color:var(--ink);font-weight:500}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--neutral)}
+.dot.on{background:var(--green)}
+
+/* step heading */
+.step{margin-top:44px}
+.step-h{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.step-h h2{font-size:24px}
+.step-h .k{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.1em}
+.step-h p{margin:0;color:var(--muted);font-size:14px;flex-basis:100%}
+
+/* indicators */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.ind{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.ind .g{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ind .g .en{font-size:12px;letter-spacing:.12em;color:var(--gold);font-weight:700;text-transform:uppercase}
+.ind .g .zh{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--navy)}
+.big{font-family:var(--serif);font-weight:900;font-size:38px;line-height:1.1;color:var(--navy)}
+.bigl{font-size:13px;color:var(--muted);margin-top:2px}
+.rows{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.rows li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.rows li span:first-child{color:var(--muted)}
+.rows li span:last-child{font-weight:500;text-align:right}
+.flag{font-size:13px;border-radius:8px;padding:6px 10px;background:var(--sand)}
+.flag.hot{border-left:4px solid var(--hot)}
+.flag.cool{border-left:4px solid var(--cool)}
+.flag.neutral{border-left:4px solid var(--neutral)}
+.src{font-size:12px;color:var(--muted);margin-top:auto}
+.src a{margin-right:8px}
+
+.ref{margin-top:14px;background:var(--sand);border-radius:10px;padding:16px 18px}
+.ref h3{font-size:18px;margin-bottom:6px}
+.ref ul{margin:0;padding-left:20px}
+.ref li{margin:3px 0}
+.ref .note{font-size:12px;color:var(--muted);margin:8px 0 0}
+
+/* vote form */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card+.card{margin-top:14px}
+.card h3{font-size:19px;margin-bottom:4px}
+.hint{font-size:13px;color:var(--muted);margin:0 0 12px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.opt label{display:flex;flex-direction:column;gap:2px;border:2px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);min-height:76px;justify-content:center}
+.opt .l{font-weight:700;font-size:17px}
+.opt .r{font-size:13px;color:var(--muted)}
+.opt input:focus-visible+label{outline:3px solid var(--focus);outline-offset:2px}
+.opt input:checked+label.hike{border-color:var(--hike);background:color-mix(in srgb,var(--hike) 12%,var(--surface))}
+.opt input:checked+label.hold{border-color:var(--hold);background:color-mix(in srgb,var(--hold) 12%,var(--surface))}
+.opt input:checked+label.cut{border-color:var(--cut);background:color-mix(in srgb,var(--cut) 12%,var(--surface))}
+.opt input:checked+label .l::before{content:"✓ "}
+
+.rgroup{margin-top:14px}
+.rgroup h4{margin:0 0 6px;font-size:13px;letter-spacing:.1em;color:var(--gold);font-weight:700}
+.chips{display:flex;flex-direction:column;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.chip label{display:block;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px 10px 40px;background:var(--bg);font-size:15px;position:relative}
+.chip label::before{content:"";position:absolute;left:12px;top:13px;width:18px;height:18px;border:2px solid var(--muted);border-radius:5px;background:var(--surface)}
+.chip input:checked+label{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,var(--surface))}
+.chip input:checked+label::before{background:var(--gold);border-color:var(--gold)}
+.chip input:checked+label::after{content:"";position:absolute;left:18px;top:16px;width:5px;height:9px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.chip input:focus-visible+label{outline:3px solid var(--focus);outline-offset:2px}
+.chip input:disabled+label{opacity:.45;cursor:not-allowed}
+.counter{font-size:14px;color:var(--muted);margin:8px 0 0}
+.counter b{color:var(--ink)}
+
+.roles{display:flex;flex-wrap:wrap;gap:8px}
+.roles .chip label{padding:8px 14px}
+.roles .chip label::before,.roles .chip label::after{display:none}
+.roles .chip input:checked+label{font-weight:700}
+
+.btn{display:block;width:100%;border:0;border-radius:10px;background:var(--navy);color:var(--bg);font-weight:700;font-size:17px;padding:14px;margin-top:16px}
+@media (prefers-color-scheme:dark){.btn{background:var(--gold);color:#131C25}}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:none;border:1.5px solid var(--line);color:var(--ink);margin-top:10px;font-weight:500}
+.msg{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.msg.err{color:var(--red)}
+
+/* results */
+.done{border-left:5px solid var(--green)}
+.done h3{color:var(--green)}
+.bars{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.bar{display:grid;grid-template-columns:118px 1fr 64px;gap:10px;align-items:center}
+.bar .n{font-weight:500;font-size:15px}
+.bar .t{height:26px;background:var(--sand);border-radius:6px;overflow:hidden}
+.bar .f{height:100%;width:0;transition:width .5s ease;border-radius:6px}
+.bar.hike .f{background:var(--hike)} .bar.hold .f{background:var(--hold)} .bar.cut .f{background:var(--cut)}
+.bar .v{font-variant-numeric:tabular-nums;text-align:right;font-size:14px}
+.bar.mine .n::after{content:" ← 你";color:var(--gold);font-weight:700;font-size:13px}
+.rank{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.rank li{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.rank .c{font-variant-numeric:tabular-nums;color:var(--muted)}
+.leanTag{display:inline-block;font-size:11px;border-radius:999px;padding:0 8px;margin-right:6px;border:1px solid currentColor}
+.leanTag.hike{color:var(--hike)} .leanTag.hold{color:var(--hold)} .leanTag.cut{color:var(--cut)}
+.verdict{background:var(--sand);border-radius:10px;padding:12px 14px;font-size:15px;margin-top:10px}
+
+/* teacher */
+.tbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.tbar .count{font-family:var(--serif);font-weight:900;font-size:44px;line-height:1;color:var(--navy)}
+.tbar .count small{font-family:var(--sans);font-size:14px;font-weight:400;color:var(--muted);margin-left:6px}
+.tbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tbtns .btn{width:auto;margin:0;padding:10px 16px;font-size:15px}
+.big-bars .bar{grid-template-columns:150px 1fr 90px}
+.big-bars .bar .t{height:38px}
+.big-bars .bar .n{font-size:18px}
+.big-bars .bar .v{font-size:20px;font-weight:700}
+@media (max-width:560px){
+  .bar,.big-bars .bar{grid-template-columns:96px 1fr 52px}
+  .big-bars .bar .n{font-size:15px}
+}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.qr{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.qr svg{width:132px;height:132px;background:#fff;padding:6px;border-radius:8px}
+.qr code{font-size:13px;word-break:break-all;color:var(--muted)}
+.pin{display:flex;gap:8px;max-width:320px}
+.pin input{flex:1;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface)}
+.pin .btn{width:auto;margin:0}
+footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.bar .f{transition:none}}
+
+/* seats */
+.seatgrp{margin-top:12px}
+.seatgrp h4{margin:0 0 2px;font-size:15px;font-family:var(--serif);color:var(--navy)}
+.seatgrp .lens{font-size:13px;color:var(--muted);margin:0 0 8px}
+.seats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.seat{position:relative}
+.seat input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.seat label{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);font-weight:700}
+.seat input:checked+label{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--surface))}
+.seat input:checked+label::before{content:"✓ "}
+.seat input:focus-visible+label{outline:3px solid var(--focus);outline-offset:2px}
+.brief{background:var(--sand);border-radius:10px;padding:12px 14px;margin-top:12px}
+.brief p{margin:0 0 6px;font-weight:700}
+.brief ul{margin:0;padding-left:20px;font-size:15px}
+details.more{margin-top:16px;border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
+details.more summary{cursor:pointer;font-weight:700;color:var(--gold);padding:4px 0}
+.gbars{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:6px}
+.gbars .gb{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.gbars .gb h4{margin:0 0 4px;font-size:15px;font-family:var(--serif);color:var(--navy)}
+.gbars .gb .bars{gap:6px}
+.gbars .bar{grid-template-columns:78px 1fr 30px;gap:8px}
+.gbars .bar .t{height:16px}
+.gbars .bar .v{font-size:12px}
+.gbars .bar .n{font-size:13px}
+.council{background:var(--sand);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script>
+(function(){
+"use strict";
+var D = window.CBC_DATA, C = window.APP_CONFIG;
+var params = new URLSearchParams(location.search);
+var SESSION = (params.get("s") || C.SESSION || "default").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 24) || "default";
+var IS_TEACHER = params.has("teacher");
+var ONLINE = /^https:\/\/[^\s]+$/.test(C.FIREBASE_DB_URL || "");
+var BASE = ONLINE ? C.FIREBASE_DB_URL.replace(/\/+$/, "") + "/sessions/" + SESSION : "";
+
+var OPT = {}; D.options.forEach(function(o){ OPT[o.id] = o; });
+var RSN = {}; D.reasons.forEach(function(r){ RSN[r.id] = r; });
+var SEAT = {}, SEAT_GROUP = {}, GROUP = {};
+D.groups.forEach(function(g){ GROUP[g.id] = g; g.seats.forEach(function(s){ SEAT[s.id] = s; SEAT_GROUP[s.id] = g; }); });
+var LEAN_LABEL = { hike: "偏升息", hold: "偏維持", cut: "偏降息" };
+
+function $(s, el){ return (el || document).querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmtRate(x){ return x.toFixed(3) + "%"; }
+function ls(k, v){
+  try{ if(v === undefined) return localStorage.getItem(k); if(v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); }catch(e){}
+  return null;
+}
+function reasonsFor(seatId){
+  return D.reasons.filter(function(r){ return r.seat === seatId; });
+}
+function allowed(seatId, rid){
+  var r = RSN[rid]; if(!r) return false;
+  return r.seat === seatId || seatId === "sch";   /* 學者可採納任何席次的理由 */
+}
+
+/* ---------------- storage ---------------- */
+var demo = null;
+var LKEY = "cbcvote:" + SESSION;
+function localState(){ try{ return JSON.parse(ls(LKEY) || "{}"); }catch(e){ return {}; } }
+function saveLocal(s){ ls(LKEY, JSON.stringify(s)); }
+
+function sanitize(raw){
+  var out = {}; if(!raw || typeof raw !== "object") return out;
+  Object.keys(raw).forEach(function(id){
+    var v = raw[id]; if(!v || !OPT[v.o] || !SEAT[v.seat]) return;
+    var rs = (Array.isArray(v.r) ? v.r : []).filter(function(x){ return allowed(v.seat, x); }).slice(0, D.maxReasons);
+    out[id] = { o: v.o, r: rs, seat: v.seat };
+  });
+  return out;
+}
+var store = {
+  getVotes: function(){
+    if(ONLINE) return fetch(BASE + "/votes.json", {cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(sanitize);
+    if(demo) return Promise.resolve(demo);
+    var s = localState(); return Promise.resolve(s.mine ? sanitize({ me: s.mine }) : {});
+  },
+  putVote: function(id, v){
+    if(ONLINE) return fetch(BASE + "/votes/" + encodeURIComponent(id) + ".json", {method:"PUT", body: JSON.stringify(v)}).then(function(r){ if(!r.ok) throw new Error(r.status); });
+    var s = localState(); s.mine = v; saveLocal(s); return Promise.resolve();
+  },
+  getRevealed: function(){
+    if(ONLINE) return fetch(BASE + "/revealed.json", {cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(x){ return x === true; });
+    return Promise.resolve(!!localState().revealed);
+  },
+  setRevealed: function(b){
+    if(ONLINE) return fetch(BASE + "/revealed.json", {method:"PUT", body: JSON.stringify(!!b)}).then(function(r){ if(!r.ok) throw new Error(r.status); });
+    var s = localState(); s.revealed = !!b; saveLocal(s); return Promise.resolve();
+  },
+  clear: function(){
+    demo = null;
+    if(ONLINE) return fetch(BASE + ".json", {method:"DELETE"}).then(function(r){ if(!r.ok) throw new Error(r.status); });
+    saveLocal({}); return Promise.resolve();
+  }
+};
+
+/* ---------------- shared views ---------------- */
+function header(){
+  return '<header class="top">' +
+    '<div class="eyebrow">MONETARY POLICY COMMITTEE ｜ 模擬理監事會議</div>' +
+    '<h1>假如你是理事</h1>' +
+    '<p class="lede">看完最新的決策參考指標，選定你的席次，站在該席次的立場投下一票，並選出你的決策理由。</p>' +
+    '<div class="meta">' +
+      '<span class="tag">本次議題 <b>' + esc(D.meetingLabel) + '</b></span>' +
+      '<span class="tag">現行' + esc(D.rateLabel) + ' <b class="num">' + fmtRate(D.currentRate) + '</b></span>' +
+      '<span class="tag">資料截至 <b>' + esc(D.asOf) + '</b></span>' +
+      '<span class="tag"><span class="dot' + (ONLINE ? " on" : "") + '"></span><b>' + (ONLINE ? "已連線・場次 " + esc(SESSION) : "單機模式") + '</b></span>' +
+    '</div></header>';
+}
+
+function indicatorsView(){
+  var cards = D.indicators.map(function(i){
+    var rows = i.rows.map(function(r){ return '<li><span>' + esc(r[0]) + '</span><span class="num">' + esc(r[1]) + '</span></li>'; }).join("");
+    var src = i.src.map(function(s){ return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name) + '</a>'; }).join("");
+    return '<article class="ind">' +
+      '<div class="g"><span class="zh">' + esc(i.zh) + '</span><span class="en">' + esc(i.en) + '</span></div>' +
+      '<div><div class="big num">' + esc(i.big) + '</div><div class="bigl">' + esc(i.bigLabel) + '</div></div>' +
+      '<ul class="rows">' + rows + '</ul>' +
+      '<div class="flag ' + esc(i.flag.tone) + '">' + esc(i.flag.text) + '</div>' +
+      '<div class="src">出處：' + src + '</div></article>';
+  }).join("");
+  var ref = D.reference;
+  var refHtml = '<aside class="ref"><h3>' + esc(ref.title) + '</h3><ul>' +
+    ref.items.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join("") + '</ul>' +
+    '<p class="note">' + esc(ref.note) + ' <a href="' + esc(ref.src.url) + '" target="_blank" rel="noopener">' + esc(ref.src.name) + '</a></p></aside>';
+  return '<section class="step" aria-labelledby="s1"><div class="step-h"><span class="k">STEP 1</span><h2 id="s1">先看數據：六大決策參考指標</h2>' +
+    '<p>央行不會只看一個數字。請逐項讀完，再進入投票。</p></div><div class="grid">' + cards + '</div>' + refHtml + '</section>';
+}
+
+function tally(votes){
+  var cnt = {}; D.options.forEach(function(o){ cnt[o.id] = 0; });
+  Object.keys(votes).forEach(function(id){ cnt[votes[id].o]++; });
+  return cnt;
+}
+function barsHtml(votes, mine, big){
+  var n = Object.keys(votes).length, cnt = tally(votes);
+  var html = D.options.map(function(o){
+    var pct = n ? Math.round(cnt[o.id] / n * 100) : 0;
+    return '<div class="bar ' + o.tone + (mine === o.id ? " mine" : "") + '"><span class="n">' + esc(o.label) + '</span>' +
+      '<div class="t" role="img" aria-label="' + esc(o.label) + ' ' + pct + '%"><div class="f" style="width:' + pct + '%"></div></div>' +
+      '<span class="v">' + cnt[o.id] + (big ? '票・' + pct + '%' : '') + '</span></div>';
+  }).join("");
+  return '<div class="bars' + (big ? " big-bars" : "") + '">' + html + '</div>';
+}
+function filterVotes(votes, fn){
+  var out = {}; Object.keys(votes).forEach(function(id){ if(fn(votes[id])) out[id] = votes[id]; }); return out;
+}
+function groupBars(votes, mineGroup){
+  return '<div class="gbars">' + D.groups.map(function(g){
+    var sub = filterVotes(votes, function(v){ return SEAT_GROUP[v.seat].id === g.id; });
+    var n = Object.keys(sub).length;
+    var seatLine = g.seats.length > 1 ? '<p class="hint" style="margin:0 0 6px">' + g.seats.map(function(s){
+      var c = Object.keys(sub).filter(function(id){ return sub[id].seat === s.id; }).length; return esc(s.label) + " " + c; }).join("・") + '</p>' : "";
+    return '<div class="gb"><h4>' + esc(g.label) + '（' + n + ' 人）' + (mineGroup === g.id ? ' <span style="color:var(--gold);font-size:13px">← 你</span>' : '') + '</h4>' + seatLine +
+      (n ? barsHtml(sub, null, false) : '<p class="hint">尚無投票。</p>') + '</div>';
+  }).join("") + '</div>';
+}
+function councilResult(votes){
+  var n = Object.keys(votes).length; if(!n) return "";
+  var cnt = tally(votes), best = null;
+  D.options.forEach(function(o){ if(!best || cnt[o.id] > cnt[best.id]) best = o; });
+  var tie = D.options.filter(function(o){ return cnt[o.id] === cnt[best.id]; }).length > 1;
+  var msg = tie ? "出現同票，沒有單一選項領先。" : (cnt[best.id] * 2 > n ? "「" + esc(best.label) + "」獲得過半（" + cnt[best.id] + "／" + n + "），理事會通過。" : "「" + esc(best.label) + "」領先（" + cnt[best.id] + "／" + n + "），但未過半。");
+  return '<div class="council"><b>若全班就是理事會：</b>' + msg + '</div>';
+}
+function reasonLine(r){
+  return '<span class="leanTag ' + r.lean + '">' + LEAN_LABEL[r.lean] + '</span>' + esc(SEAT[r.seat].label) + '｜' + esc(r.theme) + '｜' + esc(r.text);
+}
+function reasonRank(votes, limit){
+  var cnt = {};
+  Object.keys(votes).forEach(function(id){ votes[id].r.forEach(function(r){ cnt[r] = (cnt[r] || 0) + 1; }); });
+  var arr = Object.keys(cnt).map(function(k){ return [k, cnt[k]]; }).sort(function(a, b){ return b[1] - a[1]; }).slice(0, limit || 5);
+  if(!arr.length) return '<p class="hint">還沒有資料。</p>';
+  return '<ol class="rank" style="list-style:none">' + arr.map(function(p){
+    return '<li><span>' + reasonLine(RSN[p[0]]) + '</span><span class="c">' + p[1] + ' 人</span></li>';
+  }).join("") + '</ol>';
+}
+
+/* ---------------- student ---------------- */
+function studentApp(){
+  var app = $("#app");
+  var myId = ls("cbcvote:id");
+  if(!myId){ myId = "v" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); ls("cbcvote:id", myId); }
+  var mine = null; try{ mine = JSON.parse(ls("cbcvote:mine:" + SESSION) || "null"); }catch(e){}
+  if(mine && !SEAT[mine.seat]) mine = null;
+  var pre = params.get("seat");
+  var draft = mine ? { o: mine.o, r: mine.r.slice(), seat: mine.seat } : { o: null, r: [], seat: SEAT[pre] ? pre : null };
+  var revealed = false, editing = !mine;
+
+  app.innerHTML = header() + indicatorsView() +
+    '<section class="step" id="voteBox" aria-labelledby="s2"></section>' +
+    '<section class="step" id="resBox" hidden aria-labelledby="s3"></section>' +
+    '<footer>本頁為教學模擬，席次立場為簡化設定，票數與理由僅供課堂討論，不代表任何機關立場。數據請以原始出處為準。</footer>';
+
+  function reasonChip(r, on, full){
+    return '<div class="chip"><input type="checkbox" id="r_' + r.id + '" value="' + r.id + '"' + (on ? " checked" : "") + (full && !on ? " disabled" : "") + '>' +
+      '<label for="r_' + r.id + '">' + esc(r.text) + '</label></div>';
+  }
+  function byTheme(list){
+    var full = draft.r.length >= D.maxReasons, themes = [];
+    list.forEach(function(r){ if(themes.indexOf(r.theme) < 0) themes.push(r.theme); });
+    return themes.map(function(t){
+      return '<div class="rgroup"><h4>' + esc(t) + '</h4><div class="chips">' + list.filter(function(r){ return r.theme === t; }).map(function(r){ return reasonChip(r, draft.r.indexOf(r.id) > -1, full); }).join("") + '</div></div>';
+    }).join("");
+  }
+  function reasonBlock(seatId){
+    var html = byTheme(reasonsFor(seatId));
+    if(seatId === "sch"){
+      var open = draft.r.some(function(id){ return RSN[id].seat !== "sch"; });
+      html += '<details class="more"' + (open ? " open" : "") + '><summary>也可以採納其他席次的理由</summary>' +
+        D.groups.map(function(g){ return g.seats.filter(function(s){ return s.id !== "sch"; }).map(function(s){
+          return '<div class="rgroup"><h4 style="font-size:14px;color:var(--navy);letter-spacing:0">' + esc(s.label) + '</h4>' + byTheme(reasonsFor(s.id)) + '</div>'; }).join(""); }).join("") + '</details>';
+    }
+    return html;
+  }
+  function briefHtml(sd){
+    return '<p>' + esc(sd.brief) + '</p><ul>' + sd.cares.map(function(c){ return '<li>' + esc(c) + '</li>'; }).join("") + '</ul>';
+  }
+  function voteForm(){
+    var seats = D.groups.map(function(g){
+      return '<div class="seatgrp"><h4>' + esc(g.label) + '</h4><p class="lens">' + esc(g.lens) + '</p><div class="seats" role="radiogroup" aria-label="' + esc(g.label) + '">' +
+        g.seats.map(function(s){ return '<div class="seat"><input type="radio" name="seat" id="s_' + s.id + '" value="' + s.id + '"' + (draft.seat === s.id ? " checked" : "") + '><label for="s_' + s.id + '">' + esc(s.label) + '</label></div>'; }).join("") + '</div></div>';
+    }).join("");
+    var sd = draft.seat ? SEAT[draft.seat] : null;
+    var brief = '<div class="brief" id="brief"' + (sd ? "" : " hidden") + '>' + (sd ? briefHtml(sd) : "") + '</div>';
+    var opts = D.options.map(function(o){
+      return '<div class="opt"><input type="radio" name="opt" id="o_' + o.id + '" value="' + o.id + '"' + (draft.o === o.id ? " checked" : "") + '>' +
+        '<label for="o_' + o.id + '" class="' + o.tone + '"><span class="l">' + esc(o.label) + '</span><span class="r num">' + esc(D.rateLabel) + ' → ' + fmtRate(D.currentRate + o.delta) + '</span></label></div>';
+    }).join("");
+    return '<div class="step-h"><span class="k">STEP 2</span><h2 id="s2">選席次、投票、說明理由</h2><p>你是 15 位理事之一。請站在你所選席次的立場思考，不必和你平常的想法一致。</p></div>' +
+      '<div class="card"><h3>① 選擇你的席次</h3><p class="hint">理事分成三組。選定後會顯示該席次的考量。</p>' + seats + brief + '</div>' +
+      '<div class="card"><h3>② 你的一票</h3><p class="hint">單選。' + esc(D.rateLabel) + '現為 ' + fmtRate(D.currentRate) + '，1 碼 = 0.25 個百分點。</p><div class="opts" role="radiogroup" aria-label="投票選項">' + opts + '</div></div>' +
+      '<div class="card" id="rsnCard"><h3>③ 你的決策理由</h3><p class="hint">最多選 ' + D.maxReasons + ' 項，理由依你的席次而定。</p><div id="rsnBody">' + (draft.seat ? reasonBlock(draft.seat) : '<p class="hint">請先選擇席次。</p>') + '</div>' +
+        '<p class="counter" id="cnt" aria-live="polite">已選 <b>' + draft.r.length + '</b> / ' + D.maxReasons + '</p>' +
+        '<button class="btn" id="submit" type="button">' + (mine ? "更新我的投票" : "送出投票") + '</button>' +
+        (mine ? '<button class="btn ghost" id="cancel" type="button">取消修改</button>' : "") +
+        '<p class="msg" id="msg" role="status"></p></div>';
+  }
+  function doneCard(){
+    var o = OPT[mine.o], sd = SEAT[mine.seat];
+    var lean = { hike: 0, hold: 0, cut: 0 };
+    mine.r.forEach(function(r){ lean[RSN[r].lean]++; });
+    var consistent = mine.r.length ? mine.r.every(function(r){ return RSN[r].lean === o.tone; }) : null;
+    var v = mine.r.length ? '<div class="verdict">你的理由：' + ["hike", "hold", "cut"].filter(function(k){ return lean[k]; }).map(function(k){ return LEAN_LABEL[k] + " " + lean[k] + " 項"; }).join("、") +
+        (consistent ? "。理由與投票方向一致。" : "。理由和投票方向並不完全一致，可以想想哪些理由最後說服了你。") + '</div>' : "";
+    return '<div class="step-h"><span class="k">STEP 2</span><h2 id="s2">你的投票</h2></div>' +
+      '<div class="card done"><h3>已送出</h3><p style="margin:4px 0 8px">席次：<b>' + esc(SEAT_GROUP[mine.seat].label) + '・' + esc(sd.label) + '</b><br>投票：<b>' + esc(o.label) + '</b>（' + esc(D.rateLabel) + ' → ' + fmtRate(D.currentRate + o.delta) + '）</p>' +
+      '<ul style="margin:0;padding-left:20px">' + mine.r.map(function(r){ return '<li>' + esc(RSN[r].theme) + '｜' + esc(RSN[r].text) + '</li>'; }).join("") + '</ul>' + v +
+      (revealed ? "" : '<button class="btn ghost" id="edit" type="button">修改我的投票</button>') + '</div>';
+  }
+  function renderVote(){
+    $("#voteBox").innerHTML = (mine && !editing) ? doneCard() : voteForm();
+    bindVote(); renderResults();
+  }
+  function refreshReasons(){
+    var body = $("#rsnBody"); if(!body) return;
+    body.innerHTML = draft.seat ? reasonBlock(draft.seat) : '<p class="hint">請先選擇席次。</p>';
+    bindChips(); $("#cnt").innerHTML = '已選 <b>' + draft.r.length + '</b> / ' + D.maxReasons;
+  }
+  function bindChips(){
+    var box = $("#voteBox");
+    box.querySelectorAll('.chips input[type="checkbox"]').forEach(function(el){
+      el.addEventListener("change", function(){
+        var i = draft.r.indexOf(el.value);
+        if(el.checked && i < 0 && draft.r.length < D.maxReasons) draft.r.push(el.value);
+        if(!el.checked && i > -1) draft.r.splice(i, 1);
+        var full = draft.r.length >= D.maxReasons;
+        box.querySelectorAll('.chips input[type="checkbox"]').forEach(function(x){ x.disabled = full && !x.checked; });
+        $("#cnt").innerHTML = '已選 <b>' + draft.r.length + '</b> / ' + D.maxReasons;
+      });
+    });
+  }
+  function bindVote(){
+    var box = $("#voteBox");
+    box.querySelectorAll('input[name="opt"]').forEach(function(el){ el.addEventListener("change", function(){ draft.o = el.value; }); });
+    box.querySelectorAll('input[name="seat"]').forEach(function(el){
+      el.addEventListener("change", function(){
+        draft.seat = el.value;
+        draft.r = draft.r.filter(function(id){ return allowed(draft.seat, id); });
+        var b = $("#brief"); b.hidden = false; b.innerHTML = briefHtml(SEAT[draft.seat]);
+        refreshReasons();
+      });
+    });
+    bindChips();
+    var sub = $("#submit"); if(sub) sub.addEventListener("click", submit);
+    var cancel = $("#cancel"); if(cancel) cancel.addEventListener("click", function(){ draft = { o: mine.o, r: mine.r.slice(), seat: mine.seat }; editing = false; renderVote(); });
+    var edit = $("#edit"); if(edit) edit.addEventListener("click", function(){ draft = { o: mine.o, r: mine.r.slice(), seat: mine.seat }; editing = true; renderVote(); $("#voteBox").scrollIntoView({behavior:"smooth", block:"start"}); });
+  }
+  function submit(){
+    var msg = $("#msg"); msg.className = "msg";
+    if(!draft.seat){ msg.className = "msg err"; msg.textContent = "請先選擇你的席次。"; return; }
+    if(!draft.o){ msg.className = "msg err"; msg.textContent = "請選擇你的一票。"; return; }
+    if(!draft.r.length){ msg.className = "msg err"; msg.textContent = "請至少選擇一項決策理由。"; return; }
+    var rec = { o: draft.o, r: draft.r.slice(), seat: draft.seat };
+    $("#submit").disabled = true; msg.textContent = "送出中…";
+    store.putVote(myId, rec).then(function(){
+      mine = rec; ls("cbcvote:mine:" + SESSION, JSON.stringify(rec)); editing = false; renderVote();
+      $("#voteBox").scrollIntoView({behavior:"smooth", block:"start"});
+    }).catch(function(){
+      $("#submit").disabled = false; msg.className = "msg err"; msg.textContent = "送出失敗，請確認網路後再試一次。";
+    });
+  }
+  function renderResults(){
+    var box = $("#resBox");
+    if(!mine){ box.hidden = true; return; }
+    box.hidden = false;
+    if(!revealed){
+      box.innerHTML = '<div class="step-h"><span class="k">STEP 3</span><h2 id="s3">全班結果</h2></div><div class="card"><p style="margin:0">等講師公布結果。公布前請先不要討論，先讓每個人獨立判斷。</p></div>';
+      return;
+    }
+    store.getVotes().then(function(votes){
+      var n = Object.keys(votes).length, mg = SEAT_GROUP[mine.seat];
+      var same = filterVotes(votes, function(v){ return SEAT_GROUP[v.seat].id === mg.id; });
+      box.innerHTML = '<div class="step-h"><span class="k">STEP 3</span><h2 id="s3">全班結果</h2><p>共 ' + n + ' 位理事投票。</p></div>' +
+        '<div class="card"><h3>全體投票分布</h3>' + barsHtml(votes, mine.o, true) + councilResult(votes) + '</div>' +
+        '<div class="card"><h3>三組各自怎麼投</h3>' + groupBars(votes, mg.id) + '</div>' +
+        '<div class="card"><h3>大家最常選的理由</h3>' + reasonRank(votes, 6) + '</div>' +
+        '<div class="card"><h3>' + esc(mg.label) + '最看重的理由</h3>' + reasonRank(same, 4) + '</div>';
+    }).catch(function(){ box.innerHTML = '<div class="card"><p class="msg err">暫時讀不到結果，請稍後重新整理。</p></div>'; });
+  }
+  function poll(){
+    store.getRevealed().then(function(r){
+      if(r !== revealed){ revealed = r; renderVote(); }
+      else if(revealed) renderResults();
+    }).catch(function(){});
+  }
+  renderVote(); poll();
+  if(ONLINE) setInterval(poll, C.POLL_MS || 4000);
+}
+
+/* ---------------- teacher ---------------- */
+function teacherApp(){
+  var app = $("#app");
+  function gate(){
+    app.innerHTML = header() + '<section class="step"><div class="card"><h3>講師模式</h3><p class="hint">請輸入講師密碼。</p>' +
+      '<form class="pin" id="pinForm"><input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="講師密碼"><button class="btn" type="submit">進入</button></form>' +
+      '<p class="msg err" id="pinMsg" role="status"></p></div></section>';
+    $("#pinForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      if($("#pin").value === String(C.TEACHER_PIN)){ ls("cbcvote:t", "1"); board(); }
+      else $("#pinMsg").textContent = "密碼不正確。";
+    });
+  }
+  function studentUrl(){ var u = new URL(location.href); u.search = ""; u.hash = ""; if(SESSION !== (C.SESSION || "default")) u.searchParams.set("s", SESSION); return u.toString(); }
+  function board(){
+    var revealed = false, votes = {};
+    app.innerHTML = header() +
+      '<section class="step"><div class="step-h"><span class="k">TEACHER</span><h2>講師控制台</h2></div>' +
+      '<div class="card"><div class="tbar"><div><div class="count num" id="n">0<small>票</small></div></div>' +
+        '<div class="tbtns"><button class="btn" id="rev" type="button"></button>' +
+        (ONLINE ? "" : '<button class="btn ghost" id="demo" type="button">載入示範資料</button>') +
+        '<button class="btn ghost" id="reset" type="button">清空票數</button></div></div>' +
+        (ONLINE ? "" : '<p class="msg">目前是單機模式（尚未設定 Firebase），只能看到示範資料。設定方式請見 README。</p>') + '</div>' +
+      '<div class="card"><h3>學員入口</h3><div class="qr"><div id="qr" aria-label="學員入口 QR code"></div><div><code id="url"></code></div></div></div>' +
+      '<div class="card"><h3>全體投票分布</h3><div id="bars"></div><div id="council"></div></div>' +
+      '<div class="card"><h3>三組各自怎麼投</h3><div id="gb"></div></div>' +
+      '<div class="two"><div class="card"><h3>最常被選的理由</h3><div id="rk"></div></div>' +
+      '<div class="card"><h3>各組最看重的理由</h3><div id="gr"></div></div></div></section>';
+    $("#url").textContent = studentUrl();
+    function drawQr(){
+      try{
+        var q = qrcode(0, "M"); q.addData(studentUrl()); q.make();
+        $("#qr").innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+        var svg = $("#qr svg"); if(svg){ svg.style.width = "132px"; svg.style.height = "132px"; svg.style.background = "#fff"; svg.style.padding = "6px"; svg.style.borderRadius = "8px"; }
+      }catch(e){ $("#qr").innerHTML = ""; }
+    }
+    if(window.qrcode) drawQr(); else window.addEventListener("load", drawQr);
+
+    function draw(){
+      $("#n").innerHTML = Object.keys(votes).length + "<small>票</small>";
+      $("#bars").innerHTML = barsHtml(votes, null, true);
+      $("#council").innerHTML = councilResult(votes);
+      $("#gb").innerHTML = groupBars(votes, null);
+      $("#rk").innerHTML = reasonRank(votes, 8);
+      $("#gr").innerHTML = D.groups.map(function(g){
+        var sub = filterVotes(votes, function(v){ return SEAT_GROUP[v.seat].id === g.id; });
+        return '<h4 style="margin:0 0 4px;font-family:var(--serif);color:var(--navy)">' + esc(g.label) + '</h4>' + reasonRank(sub, 3);
+      }).join('<div style="height:10px"></div>');
+      $("#rev").textContent = revealed ? "隱藏結果（學員端）" : "公布結果給學員";
+    }
+    function refresh(){
+      store.getVotes().then(function(v){ votes = v; return store.getRevealed(); }).then(function(r){ revealed = r; draw(); }).catch(function(){});
+    }
+    $("#rev").addEventListener("click", function(){ store.setRevealed(!revealed).then(refresh); });
+    $("#reset").addEventListener("click", function(){ if(confirm("確定清空這個場次的所有票數？")) store.clear().then(refresh); });
+    var d = $("#demo");
+    if(d) d.addEventListener("click", function(){
+      /* 各席次對 [升息半碼, 維持, 降息半碼, 升息1碼] 的傾向 */
+      var order = ["hike05", "hold", "cut05", "hike1"];
+      var lean = { cbc: [0.3, 0.4, 0.05, 0.25], mof: [0.05, 0.75, 0.15, 0.05], moea: [0.1, 0.55, 0.3, 0.05], coa: [0.15, 0.45, 0.35, 0.05], sch: [0.3, 0.4, 0.1, 0.2] };
+      var seatPlan = [["cbc", 12], ["mof", 3], ["moea", 3], ["coa", 3], ["sch", 15]];
+      var v = {}, k = 0;
+      seatPlan.forEach(function(sp){
+        for(var i = 0; i < sp[1]; i++){
+          var w = lean[sp[0]], x = Math.random(), acc = 0, o = order[0];
+          for(var j = 0; j < w.length; j++){ acc += w[j]; if(x <= acc){ o = order[j]; break; } }
+          var tone = OPT[o].tone, pool = D.reasons.filter(function(r){ return r.seat === sp[0] && r.lean === tone; });
+          if(pool.length < 2) pool = D.reasons.filter(function(r){ return r.seat === sp[0]; });
+          var rs = []; while(rs.length < 2){ var pick = pool[Math.floor(Math.random() * pool.length)].id; if(rs.indexOf(pick) < 0) rs.push(pick); }
+          v["d" + (k++)] = { o: o, r: rs, seat: sp[0] };
+        }
+      });
+      demo = v; refresh();
+    });
+    refresh();
+    setInterval(refresh, C.POLL_MS || 4000);
+  }
+  if(ls("cbcvote:t") === "1") board(); else gate();
+}
+
+if(IS_TEACHER) teacherApp(); else studentApp();
+})();
+</script>
+</body>
+</html>
