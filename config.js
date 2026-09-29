@@ -8,7 +8,7 @@
    TEACHER_PIN：講師頁的簡易密碼（前端檢查，只用來防止學員誤點，不是資安機制）
 ------------------------------------------------------------------- */
 window.APP_CONFIG = {
-  FIREBASE_DB_URL: "",
+  FIREBASE_DB_URL: "https://cbc-mpc-vote-default-rtdb.asia-southeast1.firebasedatabase.app/",
   SESSION: "0930",
   TEACHER_PIN: "0930",
   POLL_MS: 4000
