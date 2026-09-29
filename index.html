@@ -500,10 +500,25 @@ function studentApp(){
         '<div class="card"><h3>' + esc(mg.label) + '最看重的理由</h3>' + reasonRank(same, 4) + '</div>';
     }).catch(function(){ box.innerHTML = '<div class="card"><p class="msg err">暫時讀不到結果，請稍後重新整理。</p></div>'; });
   }
+  function checkStillThere(){
+    /* 教師清空票數後，本機記錄已失效：回到投票畫面 */
+    if(!ONLINE || !mine || editing) return Promise.resolve(true);
+    return fetch(BASE + "/votes/" + encodeURIComponent(myId) + ".json", {cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(v){
+      if(v === null){
+        mine = null; ls("cbcvote:mine:" + SESSION, null); revealed = false; editing = true;
+        draft = { o: null, r: [], seat: null };
+        renderVote(); return false;
+      }
+      return true;
+    });
+  }
   function poll(){
-    store.getRevealed().then(function(r){
-      if(r !== revealed){ revealed = r; renderVote(); }
-      else if(revealed) renderResults();
+    checkStillThere().then(function(ok){
+      if(!ok) return;
+      return store.getRevealed().then(function(r){
+        if(r !== revealed){ revealed = r; renderVote(); }
+        else if(revealed) renderResults();
+      });
     }).catch(function(){});
   }
   renderVote(); poll();
@@ -564,7 +579,10 @@ function teacherApp(){
       store.getVotes().then(function(v){ votes = v; return store.getRevealed(); }).then(function(r){ revealed = r; draw(); }).catch(function(){});
     }
     $("#rev").addEventListener("click", function(){ store.setRevealed(!revealed).then(refresh); });
-    $("#reset").addEventListener("click", function(){ if(confirm("確定清空這個場次的所有票數？")) store.clear().then(refresh); });
+    $("#reset").addEventListener("click", function(){
+      if(!confirm("確定清空這個場次的所有票數並重設？學員需要重新投票。")) return;
+      store.clear().then(refresh).catch(function(){ alert("清空失敗：請確認 Firebase 規則已更新為最新版（SETUP.md），並檢查網路。"); });
+    });
     var d = $("#demo");
     if(d) d.addEventListener("click", function(){
       /* 各席次對 [升息半碼, 維持, 降息半碼, 升息1碼] 的傾向 */
