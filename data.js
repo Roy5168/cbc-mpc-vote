@@ -142,7 +142,7 @@ window.CBC_DATA = {
     /* 央行官員：法定目標 */
     { id: "cbc_p_up",  seat: "cbc", theme: "物價穩定", lean: "hike", text: "CPI 連 4 個月高於 2% 警戒線，核心 CPI 2.3%，已超出中期物價穩定區間 0%～2%" },
     { id: "cbc_p_sup", seat: "cbc", theme: "物價穩定", lean: "hold", text: "通膨主要來自油價與食品等供給面；央行預測 2027 年 CPI 回到 1.83%，可先觀察" },
-    { id: "cbc_fx_up", seat: "cbc", theme: "匯率穩定", lean: "hike", text: "Fed 升息後內外利差縮小，須防範資本外流與新台幣貶值壓力" },
+    { id: "cbc_fx_up", seat: "cbc", theme: "匯率穩定", lean: "hike", text: "Fed 升息後美台利差擴大，須防範資本外流與新台幣貶值壓力" },
     { id: "cbc_fx_ok", seat: "cbc", theme: "匯率穩定", lean: "hold", text: "新台幣匯價相對穩定，沒有必須以利率因應的匯率壓力" },
     { id: "cbc_fs_up", seat: "cbc", theme: "金融穩定", lean: "hike", text: "M2 成長 6.60% 已超出參考區間上限，放款與投資年增 8.23%，信用擴張需要降溫" },
     { id: "cbc_fs_ok", seat: "cbc", theme: "金融穩定", lean: "hold", text: "不動產貸款集中度已降至 34.44%，選擇性信用管制已見成效，不必動用利率" },
